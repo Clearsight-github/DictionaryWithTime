@@ -1,4 +1,4 @@
-package Main;
+package twcMain;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,9 +14,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import TimeWordCouple.*;
+import timeWordCouple.*;
 
-public class Main {
+public class TwcMain {
 
 	public static void main(String[] args) throws IOException, ParseException {
 
@@ -49,6 +49,9 @@ public class Main {
 					listFunction = input.nextLine();
 					
 					/*
+					 * When the user finished a new list or expanded a list for some reason 
+					 *  listFunction = input.nextLine();
+					 *  think that an empty line command is given to it and so that go to default case and rerun a cycle in do-while repeating the first sysout.
 					System.out.println(listFunction); //help to debug
 					if(listFunction.matches("")) {
 						
@@ -67,7 +70,9 @@ public class Main {
 				            File file = new File(fileName);
 				            file.createNewFile();
 				            
-							System.out.println("Write words to input. \nYou can type your time and words now:\ntime \"hh:mm:ss\" \"foreign words\" \"mother tongue\" or type \"back\" to finish.");
+				            System.out.println("Write words to input.");
+							System.out.println("You can type your time and words now:");
+							System.out.println("hh:mm:ss foreign_word mother_tongue_word [or type \"back\" to finish]");
 
 				            BufferedWriter bw = new BufferedWriter(new FileWriter(file)); // This is for output
 				            //BufferedReader br = new BufferedReader(new FileReader(file)); // This is for input
@@ -77,7 +82,9 @@ public class Main {
 						    
 				            do {
 				            	//Read the line from console and separate data
-				            	// couples = input.nextLine(); //hh:mm:ss word1 word2 
+				            	// couples = input.nextLine(); //hh:mm:ss word1 word2
+					            // Finds and returns the next complete token from this scanner: .next();
+				            	
 				            	firstToken = input.next();
 				            	if (firstToken.matches("back")) {
 				            		break;
@@ -87,10 +94,14 @@ public class Main {
 				            	
 				            	TimeWordCouple twc = new TimeWordCouple( date, input.next(), input.next() ); //Finds and returns the next complete token from this scanner.
 				            	listOfWords.add(i++, twc);
-				            	System.out.println("\ntime \"hh:mm:ss\" \"foreign words\" \"mother tongue\" or type \"back\" to finish.");
+								System.out.println("hh:mm:ss foreign_word mother_tongue_word [or type \"back\" to finish]");
 				            }while (true);
 				           /**Objects are created and list is filled. */
 				            
+							System.out.println("Printing out the new list with the newly recorded couples from ArrayList to the screen");
+							System.out.println(listOfWords.toString());
+							
+				            System.out.println("\nWrite list into file and close file.\n");
 				           /**Write list into file. */
 				            bw.write(listOfWords.toString());
 				            bw.flush();
@@ -124,24 +135,28 @@ public class Main {
 				            
 							System.out.println("File has chosen. Reading lines from the file and filling the ArrayList\n");
 
-				            
 							// Read input lines from the existing file and create ArrayList from data
 				            // To be able to list by date, need to recognize date format in the file
-				            // Finds and returns the next complete token from this scanner: .next();
-				            
+
 							Scanner scannerFile = new Scanner(file);
 							int linesInFile = 0;
 							
 
 				            while (scannerFile.hasNextLine()) {
-				            	//scannerFile.next(); //skip [ and , at the beginning of each row
+				            	if(scannerFile.hasNext())
+				            	scannerFile.next(); //skip "[" and "," at the beginning of each row
+				            	
+				            	if(scannerFile.hasNext()) {
 								String token = scannerFile.next();
 								
 							    Date date =  df.parse(token);
-							    
+				            	
 							    TimeWordCouple twc = new TimeWordCouple( date, scannerFile.next(), scannerFile.next() );
 							    listOfWords.add(linesInFile++, twc);
-							    
+				            	} else {
+				            		break;
+				            	}
+				            	
 							}//while
 							scannerFile.close();
 					        /**Objects are created and list is filled. Now continue to write. */
@@ -149,9 +164,12 @@ public class Main {
 							System.out.println("Printing out the existing list from ArrayList to the screen");
 							System.out.println(listOfWords.toString());
 							
-							BufferedWriter bw = new BufferedWriter(new FileWriter(file)); // This is for output
-							System.out.println("Write words to input. \nYou can type your words now:\ntime \"hh:mm:ss\" \"foreign words\" \"mother tongue\" or type \"back\" to finish.");
-						    
+							BufferedWriter bw = new BufferedWriter(new FileWriter(file)); // This is for output. Have to be after the scanning period.
+							
+				            System.out.println("Write words to input.");
+							System.out.println("You can type your time and words now:");
+							System.out.println("hh:mm:ss foreign_word mother_tongue_word [or type \"back\" to finish]");
+							
 				            do {
 				            	//Read a line from console and separate data
 				            	firstToken = input.next();
@@ -165,11 +183,15 @@ public class Main {
 				            	
 				            	listOfWords.add(linesInFile++, twc);
 				            	
-				            	System.out.println("\ntime \"hh:mm:ss\" \"foreign words\" \"mother tongue\" or type \"back\" to finish.");
+								System.out.println("hh:mm:ss foreign_word mother_tongue_word [or type \"back\" to finish]");
 				            
 				            }while (true);
 				           /**Objects and list is created. */
-				            
+
+							System.out.println("Printing out the existing list with the newly recorded couples from ArrayList to the screen");
+							System.out.println(listOfWords.toString());
+							
+				            System.out.println("\nWrite list into file and close file.\n");
 				           /**Write list into file. */
 				            bw.write(listOfWords.toString());
 				            bw.flush();
