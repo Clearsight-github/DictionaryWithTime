@@ -1,4 +1,4 @@
-package TimeWordCouple;
+package timeWordCouple;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
