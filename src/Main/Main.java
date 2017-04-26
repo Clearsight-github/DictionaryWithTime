@@ -124,7 +124,6 @@ public class Main {
 				            
 							System.out.println("File has chosen. Reading lines from the file and filling the ArrayList\n");
 
-				            BufferedWriter bw = new BufferedWriter(new FileWriter(file)); // This is for output
 				            
 							// Read input lines from the existing file and create ArrayList from data
 				            // To be able to list by date, need to recognize date format in the file
@@ -150,6 +149,7 @@ public class Main {
 							System.out.println("Printing out the existing list from ArrayList to the screen");
 							System.out.println(listOfWords.toString());
 							
+							BufferedWriter bw = new BufferedWriter(new FileWriter(file)); // This is for output
 							System.out.println("Write words to input. \nYou can type your words now:\ntime \"hh:mm:ss\" \"foreign words\" \"mother tongue\" or type \"back\" to finish.");
 						    
 				            do {
