@@ -4,17 +4,24 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class TimeWordCouple implements Comparable<TimeWordCouple> {
+public class TimeWordCouple {
 
-    private Date date;
-    private String foreignWord;
-    private String motherTongue;
-	
+	private Date date;
+	private String foreignWord;
+	private String motherTongue;
+
 	public TimeWordCouple(Date date, String foreignWord, String motherTongue) {
 		super();
 		this.date = date;
 		this.foreignWord = foreignWord;
 		this.motherTongue = motherTongue;
+	}
+	
+	public TimeWordCouple(String foreignWord) {
+		super();
+		this.date = null;
+		this.foreignWord = foreignWord;
+		this.motherTongue = null;
 	}
 
 	public Date getDate() {
@@ -41,25 +48,18 @@ public class TimeWordCouple implements Comparable<TimeWordCouple> {
 		this.motherTongue = motherTongue;
 	}
 
-	/*This separator ensure that the output is not in one line */
-	String separator = System.getProperty("line.separator"); 
-	
+	/* This separator ensure that the output is not in one line */
+	String separator = System.getProperty("line.separator");
+
 	public String toString() {
 		return " " + getDateTime(date) + " " + foreignWord + " " + motherTongue + separator;
-	}	
-	
-	//Format date to String as given in SimpleDateFormat
+	}
+
+	// Format date to String as given in SimpleDateFormat
 	public static String getDateTime(Date date) {
-	    //DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-	    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-	    return dateFormat.format(date);
-	} //Get date time example:  2017/04/22 18:38:20
-	
-	// Sort by date, I need a compareTo for each attributes of this class
-	  public int compareTo(TimeWordCouple o) {	// to change Object o to TimeWordCouple need implements Comparable<TimeWordCouple>
-	    if (this.date == null || o.date == null)
-	      return 0;
-	    return this.date.compareTo(o.date);
-	  } // calling : Collections.sort(myList);
+		// DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+		return dateFormat.format(date);
+	} // Get date time example: 2017/04/22 18:38:20
 
 }

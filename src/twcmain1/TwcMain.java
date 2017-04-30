@@ -3,18 +3,21 @@ package twcmain1;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
 import timewordcouple1.*;
+import twccomparartotforeign.TWCComparatorForeign;
+import twccomparatordate.TWCComparatorDate;
+import twccomparatormothertongue.TWCComparatorMotherTongue;
 
 public class TwcMain {
 
@@ -29,48 +32,36 @@ public class TwcMain {
 
 		Scanner input = new Scanner(System.in);
 
-		DateFormat df = new SimpleDateFormat("HH:mm:ss"); // This will recognize
-															// date format
-
-		// Create an ArrayList to store and list the words. I want to see that
-		// later everywhere. This should not change during running the program.
-		List<TimeWordCouple> listOfWords = new ArrayList<TimeWordCouple>();
+		// This will recognize date format
+		DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
 		// Menu
 		do {
 
 			System.out.println("Please enter a command: \n\"input\" or \n\"list\" or \n\"search\" or \n\"end\"");
-			text = input.nextLine();
+			text = input.next();
 
 			switch (text) {
 			case "input":
+
 				do {
 					System.out.println(
 							"Choose from the list: \n\"new\" for a new list or \n\"exist\" to continue an existing list or \n\"back\" to go back to main menu.");
-
-					listFunction = input.nextLine();
-
-					/*
-					 * When the user finished a new list or expanded a list for
-					 * some reason listFunction = input.nextLine(); think that
-					 * an empty line command is given to it and so that go to
-					 * default case and rerun a cycle in do-while repeating the
-					 * first sysout. System.out.println(listFunction); //help to
-					 * debug if(listFunction.matches("")) {
-					 * 
-					 * }
-					 */
+					
+					//input.nextLine(); would read empty String
+					listFunction = input.next();
 
 					switch (listFunction) {
 					case "new":
+						List<TimeWordCouple> listOfWords = new ArrayList<TimeWordCouple>();
+
 						System.out.println("Create a new file and fill the ArrayList...\n");
 
 						try {
 
 							System.out.println("Give me the file name what you want to create \"fileName.txt\": ");
 							// Creating a file with the given file name, this
-							// can be a function by refactoring later
-							fileName = input.nextLine();
+							fileName = input.next();
 							File file = new File(fileName);
 							file.createNewFile();
 
@@ -78,12 +69,8 @@ public class TwcMain {
 							System.out.println("You can type your time and words now:");
 							System.out.println("hh:mm:ss foreign_word mother_tongue_word [or type \"back\" to finish]");
 
-							BufferedWriter bw = new BufferedWriter(new FileWriter(file)); // This
-																							// is
-																							// for
-																							// output
-							// BufferedReader br = new BufferedReader(new
-							// FileReader(file)); // This is for input
+							// This is for output
+							BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 
 							/**
 							 * now, I have to create TimeWordCouple objects and
@@ -104,21 +91,9 @@ public class TwcMain {
 									break;
 								}
 
-								Date date = df.parse(firstToken); // This is
-																	// parsing
-																	// to date
-																	// type
+								Date date = df.parse(firstToken);
 
-								TimeWordCouple twc = new TimeWordCouple(date, input.next(), input.next()); // Finds
-																											// and
-																											// returns
-																											// the
-																											// next
-																											// complete
-																											// token
-																											// from
-																											// this
-																											// scanner.
+								TimeWordCouple twc = new TimeWordCouple(date, input.next(), input.next());
 								listOfWords.add(i++, twc);
 								System.out.println(
 										"hh:mm:ss foreign_word mother_tongue_word [or type \"back\" to finish]");
@@ -144,25 +119,19 @@ public class TwcMain {
 						break;
 
 					case "exist":
+						List<TimeWordCouple> listOfWords2 = new ArrayList<TimeWordCouple>();
+
 						System.out.println("Open a file to read and write...\n");
 						// use an existing list from file
 
 						try {
-							/**
-							 * Here I have to list files in the containing
-							 * folder to the user to be able to choose a file.
-							 */
-							// Listing files in folder
-							File path = new File(".");
-							String[] list = path.list();
-							for (int i = 0; i < list.length; i++)
-								System.out.println(list[i]);
+							listingFilesInMainFolder();
 
 							System.out.println(
 									"Give me the file name what you want to continue to extend \"fileName.txt\": ");
 
 							// Choosing file
-							fileName = input.nextLine();
+							fileName = input.next();
 							File file = new File(fileName);
 
 							System.out.println(
@@ -178,18 +147,17 @@ public class TwcMain {
 
 							while (scannerFile.hasNextLine()) {
 								if (scannerFile.hasNext())
-									scannerFile.next(); // skip "[" and "," at
-														// the beginning of each
-														// row
+									// skip "[" and "," at the beginning of each
+									// row
+									scannerFile.next();
 
 								if (scannerFile.hasNext()) {
 									String token = scannerFile.next();
 
 									Date date = df.parse(token);
 
-									TimeWordCouple twc = new TimeWordCouple(date, scannerFile.next(),
-											scannerFile.next());
-									listOfWords.add(linesInFile++, twc);
+									TimeWordCouple twc = new TimeWordCouple(date, scannerFile.next(), scannerFile.next());
+									listOfWords2.add(linesInFile++, twc);
 								} else {
 									break;
 								}
@@ -202,19 +170,10 @@ public class TwcMain {
 							 */
 
 							System.out.println("Printing out the existing list from ArrayList to the screen");
-							System.out.println(listOfWords.toString());
+							System.out.println(listOfWords2.toString());
 
-							BufferedWriter bw = new BufferedWriter(new FileWriter(file)); // This
-																							// is
-																							// for
-																							// output.
-																							// Have
-																							// to
-																							// be
-																							// after
-																							// the
-																							// scanning
-																							// period.
+							// This have to be placed after scanning period
+							BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 
 							System.out.println("Write words to input.");
 							System.out.println("You can type your time and words now:");
@@ -227,28 +186,23 @@ public class TwcMain {
 									break;
 								}
 
-								Date date = df.parse(firstToken); // This is
-																	// parsing
-																	// to date
-																	// type
+								Date date = df.parse(firstToken);
 
 								TimeWordCouple twc = new TimeWordCouple(date, input.next(), input.next());
+								listOfWords2.add(linesInFile++, twc);
 
-								listOfWords.add(linesInFile++, twc);
-
-								System.out.println(
-										"hh:mm:ss foreign_word mother_tongue_word [or type \"back\" to finish]");
+								System.out.println("hh:mm:ss foreign_word mother_tongue_word [or type \"back\" to finish]");
 
 							} while (true);
 							/** Objects and list is created. */
 
 							System.out.println(
 									"Printing out the existing list with the newly recorded couples from ArrayList to the screen");
-							System.out.println(listOfWords.toString());
+							System.out.println(listOfWords2.toString());
 
 							System.out.println("\nWrite list into file and close file.\n");
 							/** Write list into file. */
-							bw.write(listOfWords.toString());
+							bw.write(listOfWords2.toString());
 							bw.flush();
 							bw.close();
 
@@ -281,29 +235,22 @@ public class TwcMain {
 				 */
 				do {
 
-					System.out.println("Type \"open\" to open a listfile or \"back\" to back to main menu]:");
+					System.out.println("Type \"open\" [to open a listfile] or \n\"back\" [to back to main menu]");
 					// use an existing list from file
 
-					listFunction = input.nextLine();
+					listFunction = input.next();
 
 					switch (listFunction) {
 					case "open":
+						List<TimeWordCouple> listOfWords3 = new ArrayList<TimeWordCouple>();
 
 						try {
-							/**
-							 * Here I have to list files in the containing
-							 * folder to the user to be able to choose a file.
-							 */
-							// Listing files in folder
-							File path = new File(".");
-							String[] list = path.list();
-							for (int i = 0; i < list.length; i++)
-								System.out.println(list[i]);
+							listingFilesInMainFolder();
 
 							System.out.println("Give me the file name what you want to list \"fileName.txt\": ");
 
 							// Choosing file
-							fileName = input.nextLine();
+							fileName = input.next();
 							File file = new File(fileName);
 
 							System.out.println(
@@ -319,16 +266,16 @@ public class TwcMain {
 
 							while (scannerFile.hasNextLine()) {
 								if (scannerFile.hasNext())
-									scannerFile.next(); // skip "[" and "," at the beginning of each row
-								
+							// skip "[" and "," at the beginning of each row
+									scannerFile.next(); 
+
 								if (scannerFile.hasNext()) {
 									String token = scannerFile.next();
 
 									Date date = df.parse(token);
 
-									TimeWordCouple twc = new TimeWordCouple(date, scannerFile.next(),
-											scannerFile.next());
-									listOfWords.add(linesInFile++, twc);
+									TimeWordCouple twc = new TimeWordCouple(date, scannerFile.next(), scannerFile.next());
+									listOfWords3.add(linesInFile++, twc);
 								} else {
 									break;
 								}
@@ -336,11 +283,12 @@ public class TwcMain {
 							} // while
 							scannerFile.close();
 							/**
-							 * Objects are created and list is filled. Now continue to sort.
+							 * Objects are created and list is filled. Now
+							 * continue to sort.
 							 */
 
 							System.out.println("Printing out the existing list from ArrayList to the screen");
-							System.out.println(listOfWords.toString());
+							System.out.println(listOfWords3.toString());
 
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -348,38 +296,98 @@ public class TwcMain {
 
 						do {
 							System.out.println(
-									"How you want to sort the list: abc1 (foreign) or abc2 (mother tongue) or time or type \"back\" to open an other file");
-							listFunction = input.nextLine();
+									"How you want to sort the list: \nabc1 (foreign) or \nabc2 (mother tongue) or \ntime or \nback [to open an other file]");
+							listFunction = input.next();
 
 							switch (listFunction) {
 							case "abc1":
 								System.out.println("Listing in abc1 (foreign) order...");
-								/**Sort to abc1 (foreign) order and print it*/
-								Collections.sort(listOfWords, (twc1, twc2) -> twc1.getForeignWord().compareTo( twc2.getForeignWord() ) );
-								System.out.println(listOfWords.toString());
-								break;
+								/** Sort to abc1 (foreign) order and print it */
+								Collections.sort(listOfWords3, (twc1, twc2) -> twc1.getForeignWord().compareTo(twc2.getForeignWord()));
+								System.out.println(listOfWords3.toString());
 								
+								System.out.println("Do you want to save in a file? \"yes\" or \"no\"");
+								if ( input.next().matches("yes") ) {
+									
+									System.out.println("Type in the filename: ");
+
+								// Creating a file with the given file name, this
+									fileName = input.next();
+									File file = new File(fileName);
+									file.createNewFile();
+									// This is for output
+									BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+								
+									System.out.println("\nWrite list into file and close file.\n");
+									bw.write(listOfWords3.toString());
+									bw.flush();
+									bw.close();
+								}								
+								break;
+
+
 							case "abc2":
 								System.out.println("Listing in abc2 (mother tongue) order...");
-								Collections.sort(listOfWords, (twc1, twc2) -> twc1.getMotherTongue().compareTo( twc2.getMotherTongue() ) );
-								System.out.println(listOfWords.toString());
+								Collections.sort(listOfWords3, (twc1, twc2) -> twc1.getMotherTongue().compareTo(twc2.getMotherTongue()));
+								System.out.println(listOfWords3.toString());
+								
+								System.out.println("Do you want to save in a file? \"yes\" or \"no\"");
+								if ( input.next().matches("yes") ) {
+									
+									System.out.println("Type in the filename: ");
+
+								// Creating a file with the given file name, this
+									fileName = input.next();
+									File file = new File(fileName);
+									file.createNewFile();
+									// This is for output
+									BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+								
+									System.out.println("\nWrite list into file and close file.\n");
+									bw.write(listOfWords3.toString());
+									bw.flush();
+									bw.close();
+								} 								
 								break;
+
 								
 							case "time":
 								System.out.println("Listing in time order...");
-								Collections.sort(listOfWords);	//Because TimeWordCouple implements Comparable<TimeWordCouple> and so compareTo();
-								System.out.println(listOfWords.toString());
-								break;
+								// Because TimeWordCouple implements
+								// Comparable<TimeWordCouple> and so
+								// compareTo();
+								// Collections.sort(listOfWords);
+								Collections.sort(listOfWords3, (twc1, twc2) -> twc1.getDate().compareTo(twc2.getDate()));
+								System.out.println(listOfWords3.toString());
+
+								System.out.println("Do you want to save in a file? \"yes\" or \"no\"");
+								if ( input.next().matches("yes") ) {
+									
+									System.out.println("Type in the filename: ");
+
+								// Creating a file with the given file name, this
+									fileName = input.next();
+									File file = new File(fileName);
+									file.createNewFile();
+									// This is for output
+									BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 								
+									System.out.println("\nWrite list into file and close file.\n");
+									bw.write(listOfWords3.toString());
+									bw.flush();
+									bw.close();
+								}
+								break;
+
 							case "back":
 								System.out.println("Back to Main menu. ");
 								listFunction = "back";
 								break;
-								
+
 							default:
 								System.out.println("Command not recognized.");
 								break;
-								
+
 							}
 						} while (listFunction != "back");
 						break;
@@ -397,28 +405,218 @@ public class TwcMain {
 				break;
 
 			case "search":
-				// This menu assume that a list is existing. Search is only
-				// possible in a sorted list.
-				// If a list not existing throw exception or redirect to create
-				// new
-				System.out.println("Searching in an existing list for a given word...\n");
+				/**
+				 * This menu assume that a list is existing. Search is only
+				 * possible in a sorted list. If a list not existing throw
+				 * exception or redirect to create new
+				 */
+				System.out.println("Searching in existing lists for a given word...\n");
 				do {
-					System.out.println("Choose from the list: abc or time or back\n");
-					listFunction = input.nextLine();
+					// open a file or back
+
+					System.out.println("Choose from the list:");
+					System.out.println("\"abc\" [to search for a word in files, it can be foreign or mother tongue word] or");
+					System.out.println("\"time\" [to search for a time in a specific file] or");
+					System.out.println("\"back\" [to back main menu]");
+					listFunction = input.next();
 
 					switch (listFunction) {
 					case "abc":
 						System.out.println("Searching in abc order...\n");
-						// sort in abc order to search
+						System.out.print("Give me the file name or file names to search in");
+						System.out.println(" \n\"fileName1.txt\" \"fileName2.txt\" ... or \nback [to back main menu]:");
+
+						/**
+						 * Here I have to list files in the containing folder to
+						 * the user to be able to choose a file.
+						 */
+
+						listingFilesInMainFolder();
+
+						// Choosing file(s) or back
+						String inputFileNames = null;
+						input.nextLine(); // This is needed for some reason. Not clear for why.
+						inputFileNames = input.nextLine(); // put the whole row
+						
+						System.out.println("The input file names: " + inputFileNames);
+						Scanner inputStringScanner = new Scanner(inputFileNames); //.useDelimiter("\\s*")
+						// \s Any Whitespace, * Zero or more repetitions
+
+						System.out.println("Give me the search word:");
+						String searchWord = input.next();
+						System.out.println("Your search word is: " + searchWord + "\n");
+
+						try {
+							if (inputFileNames.matches("back")) {
+								System.out.println("Back to main menu.");
+								break;
+							} else {
+								do {
+									ArrayList<TimeWordCouple> listOfWordsTemporary = new ArrayList<TimeWordCouple>();
+									int linesInFile = 0; // removed here not to sum files
+									fileName = inputStringScanner.next();
+									//This could be sorted out:
+									System.out.println("inputString FileName: " + fileName);
+
+									File file = new File(fileName);
+									/**
+									 * Read input lines from the existing files
+									 * and create ArrayList from data. To be
+									 * able to list by date, need to recognize
+									 * date format in the file
+									 */
+
+									Scanner scannerFile = new Scanner(file);
+
+									while (scannerFile.hasNextLine()) {
+										if (scannerFile.hasNext())
+											// skip "[" and "," at the beginning
+											// of each row
+											scannerFile.next();
+										if (scannerFile.hasNext()) {
+											String token = scannerFile.next();
+
+											Date date = df.parse(token);
+
+											TimeWordCouple twc = new TimeWordCouple(date, scannerFile.next(), scannerFile.next());
+											listOfWordsTemporary.add(linesInFile++, twc);
+										} else {
+											break;
+										}
+									} // while scanner hasNextLine
+									scannerFile.close();
+									
+									//This could be sorted out:
+									//List the file content to see the words in
+									System.out.println("Content of listofwordtemporary: \n");
+									System.out.println(listOfWordsTemporary.toString());
+									
+									//System.out.println("List sorted in abc1 (foreign) order to search in foreign words\n");
+									Collections.sort(listOfWordsTemporary, (twc1, twc2) -> twc1.getForeignWord().compareTo(twc2.getForeignWord()));
+									//System.out.println(listOfWords.toString());
+
+									int index = Collections.binarySearch(listOfWordsTemporary, new TimeWordCouple(null, searchWord, null), new TWCComparatorForeign());
+
+									if (index >= 0)
+										System.out.println("Found in foreign words list in: " + fileName + " " + listOfWordsTemporary.get(index));
+									else
+										System.out.println("There is no such element in foreign words list in \"" + fileName + "\".\n");
+									
+									//System.out.println("Listing in abc2 (mother tongue) order to search in mother tongue words.\n");
+									Collections.sort(listOfWordsTemporary, (twc1, twc2) -> twc1.getMotherTongue().compareTo(twc2.getMotherTongue()));
+									//System.out.println(listOfWords.toString());
+									
+									index = Collections.binarySearch(listOfWordsTemporary, new TimeWordCouple(null, null, searchWord), new TWCComparatorMotherTongue());
+
+									if (index >= 0)
+										System.out.println("Found in mother tongue words list in: " + fileName + " " + listOfWordsTemporary.get(index));
+									else
+										System.out.println("There is no such element in mother tongue words list in \"" + fileName + "\".\n");
+									
+									System.out.println("Searching in the next file...");
+								} while (inputStringScanner.hasNext());
+							} // else
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						break;
+
 					case "time":
+						List<TimeWordCouple> listOfWords4 = new ArrayList<TimeWordCouple>();
+
 						System.out.println("Searching in time order...\n");
+						System.out.print("Give me the file name to search in");
+						System.out.println(" \"fileName1.txt\" or \nback [to back main menu]:");
+						
+						/**
+						 * Here I have to list files in the containing folder to
+						 * the user to be able to choose a file.
+						 */
+
+						// Listing files in main folder
+						listingFilesInMainFolder();
+
+						// Choosing file(s) or back
+						String inputFileName = input.next();
+						Scanner inputStringScanner1 = new Scanner(inputFileName);
+
+						try {
+
+							int linesInFile = 0;
+
+							if (inputFileName.matches("back")) {
+								System.out.println("Back to main menu.");
+								break;
+							} else {
+								fileName = inputStringScanner1.next();
+								File file = new File(fileName);
+								/**
+								 * Read input lines from the existing file
+								 * and create ArrayList from data. To be
+								 * able to list by date, need to recognize
+								 * date format in the file
+								 */
+
+								Scanner scannerFile = new Scanner(file);
+
+								while (scannerFile.hasNextLine()) {
+									if (scannerFile.hasNext())
+										// skip "[" and "," at the beginning
+										// of each row
+										scannerFile.next();
+									if (scannerFile.hasNext()) {
+										String token = scannerFile.next();
+
+										Date date = df.parse(token);
+
+										TimeWordCouple twc = new TimeWordCouple(date, scannerFile.next(), scannerFile.next());
+										listOfWords4.add(linesInFile++, twc);
+									} else {
+										break;
+									}
+								} // while scanner hasNextLine
+								scannerFile.close();
+								/**
+								 * Objects are created and list is filled
+								 * with file. Now continue to sort and
+								 * search in file.
+								 */
+								//List the file content to see the words in
+								System.out.println(listOfWords4.toString());
+
+								System.out.println("Give me the search time:");
+								Date searchTime;
+
+								//Here not possible to use input.nextLine(); that would read empty line
+								searchTime = df.parse( input.next() );
+
+								System.out.println("Your search Time is: " + TimeWordCouple.getDateTime(searchTime) );
+								
+								System.out.println("List sorted in time order to search ");
+								Collections.sort(listOfWords4, (twc1, twc2) -> twc1.getDate().compareTo(twc2.getDate()));
+								//System.out.println(listOfWords.toString());
+
+								int index = Collections.binarySearch(listOfWords4, new TimeWordCouple(searchTime, null , null), new TWCComparatorDate());
+
+								if (index >= 0)
+									System.out.println("Found in: " + fileName + " " + listOfWords4.get(index));
+								else
+									System.out.println("There is no such element in " + fileName + ".");
+
+							} // else
+
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
 						// sort in time order to search
 						break;
+
 					case "back":
 						System.out.println("Back to Main menu. ");
 						listFunction = "back";
 						break;
+
 					default:
 						System.out.println("Command not recognized.");
 						break;
@@ -441,5 +639,17 @@ public class TwcMain {
 		input.close();
 
 	}// static void main
+
+	//*List only .txt files in the project directory*/
+	public static void listingFilesInMainFolder() {
+		File dir = new File(".");
+		String[] list = dir.list(new FilenameFilter() { 
+			public boolean accept(File dir, String name) {
+		        return name.toLowerCase().endsWith(".txt");
+			}});
+		
+		for (int i = 0; i < list.length; i++)
+			System.out.println(list[i]);
+	}
 
 }// Class
