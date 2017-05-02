@@ -50,9 +50,12 @@ public class TimeWordCouple {
 
 	/* This separator ensure that the output is not in one line */
 	String separator = System.getProperty("line.separator");
-
+	
+	
 	public String toString() {
-		return " " + getDateTime(date) + " " + foreignWord + " " + motherTongue + separator;
+		StringBuilder sb = new StringBuilder();
+		sb.append(" ").append(getDateTime(date)).append(" ").append(String.format("%-13s", foreignWord)).append(" ").append(String.format("%-13s", motherTongue)).append(separator);
+		return sb.toString();
 	}
 
 	// Format date to String as given in SimpleDateFormat
