@@ -19,5 +19,5 @@ The file name is given by the user.
 search -> abc, time
 
 Menu "search" can search for a word (abc) in more files at a time or a time point (time) in one file given by the user. 
-The program can find one occurance in each file. The program is insensitive for the type of word when it searches so 
+The program can find one occurrence in each file. The program is insensitive for the type of word when it searches so 
 the search word can be both types of word. 
